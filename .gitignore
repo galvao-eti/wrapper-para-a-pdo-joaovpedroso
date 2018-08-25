@@ -1,0 +1,15 @@
+#Composer
+composer.phar
+/vendor/
+
+# Arquivos Criados pelo NetBeans
+nbproject/
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# Arquivos com extensao .rar
+*.rar

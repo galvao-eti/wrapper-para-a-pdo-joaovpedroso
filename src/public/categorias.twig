@@ -1,0 +1,54 @@
+{% extends "layout/default.twig" %}
+
+{% block content %}
+    <div class="container">
+        <div class="row pad-20">
+
+            <legend class="pad-top-20">Categorias Cadastradas</legend>
+
+            <a href="/categorias/nova" class="btn btn-primary mar-bottom-10">
+                Novo Cadastro
+            </a>
+
+            {% if message != null%}
+                {{ message }}
+            {% endif %}
+            
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th width="150" class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if categorias != '' %}
+                        {% for categorias in categorias %}
+                            <tr>
+                                <td>{{ categorias.id }}</td>
+                                <td>{{ categorias.nome }}</td>
+                                <td>
+                                    <form action="/categorias/editar" method="POST" class="table-action">
+                                        <input type="hidden" name="id" value="{{ categorias.id }}" class="hidden">
+                                        <button class="btn btn-success" title="Editar">
+                                            <i class="fas fa-pencil-alt"></i>
+                                        </button>
+                                    </form>
+                                    <form action="/categorias/deletar" method="POST" class="table-action">
+                                        <input type="hidden" name="id" value="{{ categorias.id }}" class="hidden">
+                                        <button class="btn btn-danger" title="Excluir">
+                                            <i class="fas fa-eraser"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>                        
+                        {% endfor %}
+                        
+                    {% endif %}                        
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+{% endblock %}

@@ -1,9 +1,9 @@
 <?php
 
-require_once "Base.php";
+namespace App;
 
 class Categoria extends Base{
-    
+
     private $id;
     private $nome;
     private $table = "categoria";
@@ -73,4 +73,5 @@ class Categoria extends Base{
         $busca->execute();
         return $busca->fetch();
     }
+    
 }

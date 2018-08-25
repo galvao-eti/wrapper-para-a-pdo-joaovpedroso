@@ -1,36 +1,106 @@
 <?php
-require_once "./layout/header.php";
-$categoria = new Categoria($config);
-?>
 
-        <main>
-            <div class="container">
-                <div class="row">
+require_once '../../vendor/autoload.php';
 
-                    <div class="col col-lg-6 col-md-6 col-sm-12 col-12 pad-20">
-                        <a href="index.php" class="link">
-                            <div class="card">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-home font-50 pad-10"></i>
-                                    <p>Home</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>                   
+$settings = [
+    'settings' => [
+        'displayErrorDetails' => true
+    ],
+];
+$app = new \Slim\App($settings);
 
-                    <div class="col col-lg-6 col-md-6 col-sm-12 col-12 pad-20">
-                        <a href="categorias.php" class="link">
-                            <div class="card">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-user-plus font-50 pad-10"></i>
-                                    <p>Categorias</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
+$container = $app->getContainer();
+$container['view'] = function ($container) {
+    $view = new \Slim\Views\Twig(__DIR__);
+    return $view;
+};
+$container['config'] = function ($container) {
+    return new App\Config('mysql', 'localhost', '3306', 'turma3', 'root', '');
+};
+$container['categoria'] = function($container) {
+    return new App\Categoria($container->config);
+};
 
-                </div>
-            </div>
-        </main>
+//Home
+$app->get('/', function ($request, $response, $args) {
+    return $this->view->render($response, 'home.twig', []);
+});
+$app->get('/categorias', function ($request, $response, $args) {
+    $Categoria = $this->categoria;
+    $categorias = $Categoria->getAll();
+    $listCategorias = [
+        "categorias" => $categorias
+    ];
 
-<?php require_once "./layout/footer.php"; ?>
+    return $this->view->render($response, 'categorias.twig', $listCategorias);
+});
+
+//Rotas das categorias
+$app->group('/categorias', function() use($container, $app) {
+
+    $this->get('/', function ($request, $response) {
+        $Categoria = $this->categoria;
+        $categorias = $Categoria->getAll();
+        $listCategorias = [
+            "categorias" => $categorias
+        ];
+
+        return $this->view->render($response, 'categorias.twig', $listCategorias);
+    });
+
+    //Formulario de Cadastro
+    $this->get('/nova', function ($request, $response) {
+        return $this->view->render($response, 'categorias-nova.twig', []);
+    });
+
+    //Deletar
+    $this->post('/deletar', function ($request, $response) {
+        $params = $request->getParsedBody();
+        $id = $params["id"];
+
+        $categoria = $this->categoria;
+        if ($categoria->delete($id)) {
+            $message = "Categoria deletada";
+        } else {
+            $message = "Erro ao deletar categoria";
+        }
+
+        return $response->withRedirect('/categorias/', 301);
+    });
+
+    //Formulario de Edição
+    $this->post('/editar', function ($request, $response) {
+        $params = $request->getParsedBody();
+        $id = $params["id"];
+
+        $Categoria = $this->categoria;
+        $categorias = $Categoria->getOne($id);
+        $listCategorias = [
+            "categorias" => $categorias
+        ];
+
+        return $this->view->render($response, 'categorias-editar.twig', $listCategorias);
+    });
+    
+    //Persistir os dados
+    $this->post('/salvar', function ($request, $response) {
+       
+        $params = $request->getParsedBody();
+        $id = trim($params['id']);
+        $nome = trim($params['nome']);
+        $Categoria = $this->categoria;
+        
+        if( empty($id) ){
+            $Categoria->setNome($nome);
+            $Categoria->insert();            
+        }else{
+            $Categoria->setNome($nome);
+            $Categoria->update($id);
+        }
+        
+        return $response->withRedirect('/categorias/', 301);        
+    });
+    
+});
+
+$app->run();

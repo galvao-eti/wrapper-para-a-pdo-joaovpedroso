@@ -1,5 +1,7 @@
 <?php
 
+namespace App;
+
 class Config {
 
     public $tipo;
@@ -9,14 +11,14 @@ class Config {
     public $usuario;
     public $senha;
     public $dsn;
-    
-    public function __construct($tipo, $host, $porta, $base, $usuario, $senha)
-    {
-        $this->tipo     = $tipo;
-        $this->host     = $host;
-        $this->porta    = $porta;
-        $this->base     = $base;
-        $this->usuario  = $usuario;
-        $this->senha    = $senha;
+
+    public function __construct($tipo, $host, $porta, $base, $usuario, $senha) {
+        $this->tipo = $tipo;
+        $this->host = $host;
+        $this->porta = $porta;
+        $this->base = $base;
+        $this->usuario = $usuario;
+        $this->senha = $senha;
     }
+
 }
